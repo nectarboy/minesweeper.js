@@ -3,7 +3,7 @@ a Minesweeper port for the browser !
 it works on phones too and you can try it [here](https://nectarboy.github.io/minesweeper.js) !
 
 ---
-<img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'><img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'><img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'>
+<img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'> <img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'> <img src='https://github.com/nectarboy/minesweeper.js/blob/main/src/img/smiley_caution.png?raw=true'>
 
 ## introduction
 this port tries to be as faithful as possible to the original game,
