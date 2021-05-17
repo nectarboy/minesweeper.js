@@ -1,0 +1,50 @@
+html, body {
+    height: 100%;
+    background: black;
+}
+
+/* minesweeper window */
+.minesweeper-window {
+    display: inline-block;
+    padding: 6px;
+
+    text-align: center;
+
+    background-color: #C0C0C0;
+
+    border: 3px solid #FFFFFF;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.minesweeper-br {
+    padding-top: 6px;
+}
+
+.score-div {
+    padding: 4px 7px 4px 5px;
+
+    border: 2px solid #808080;
+    border-right-color: #FFFFFF;
+    border-bottom-color: #FFFFFF;
+}
+
+.canvas-div {
+    border: 2px solid #808080;
+    border-right-color: #FFFFFF;
+    border-bottom-color: #FFFFFF;
+}
+
+/* smiley button */
+.smiley {
+    display: inline-block;
+
+    width: 26px;
+    height: 26px;
+
+    background-image: url(./img/smiley_idle.png);
+}
+
+.smiley:active {
+    background-image: url(./img/smiley_press.png);
+}

@@ -8,7 +8,7 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     const GRIDSPACE = 0;
     const GRIDWALL = 1;
     const GRIDMINE = 2;
-    const GRIDHARDSPACE = 3;
+    const GRIDHARDSPACE = 4;
 
     const randInt = function randInt (min, max) {
         min = Math.ceil (min);
@@ -30,7 +30,7 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     this.flagged = new Uint8Array(area).fill(0);
 
     this.didFirstClick = false; // protect player on first click
-    this.dead = false;
+    this.death = 0;
 
     this.buffer = [];
     this.flushBuffer = () => this.buffer = [];
@@ -46,13 +46,12 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             switch (this.grid[index]) {
                 case GRIDWALL:
                     this.grid[index] = GRIDSPACE;
-                    if (this.testAdjacent(x, y, GRIDWALL, true) === 8)
-                        this.clearAdjacent(x, y);
+                    this.clearAdjacent(x, y);
                     break;
                 case GRIDMINE:
-                    this.dead = true;
+                    this.death = index+1;
                     // buffer should be empty at this point ..
-                    this.drawWholeGrid();
+                    // this.drawWholeGrid();
                     break;
             }
         }
@@ -62,9 +61,8 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
 
     this.flagGrid = function(x, y) {
         var index = getIndex(x, y);
-        if (this.canClickIndex(index)) {
-            this.buffer[index] = true;
-            this.flagged[index] = !this.flagged[index];
+        if (this.grid[index] !== GRIDSPACE) {
+            this.flagged[index] ^= 1;
         }
 
         //return index;
@@ -74,12 +72,15 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     this.canClickIndex = index => this.grid[index] !== GRIDSPACE && !this.flagged[index];
 
     this.clearAdjacent = function(x, y) {
+        if (this.testAdjacentTile(x, y, GRIDMINE, false) > 0)
+            return;
+
         function checkAdj(xx, yy) {
             if (xx >= width || xx < 0 || yy >= height || yy < 0)
                 return;
             
             var index = getIndex(xx, yy);
-            if (that.grid[index] === GRIDWALL) {
+            if (that.canClickIndex(index)) {
                 that.grid[index] = GRIDSPACE;
                 that.clearAdjacent(xx, yy);
             }
@@ -103,7 +104,7 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
         checkAdj(xi, yd);
     };
 
-    this.testAdjacent = function(x, y, tile, countOOB) {
+    this.testAdjacentTile = function(x, y, tile, countOOB) {
         function checkAdj(xx, yy) {
             if (xx >= width || xx < 0 || yy >= height || yy < 0)
                 return countOOB ? 1 : 0;
@@ -180,16 +181,19 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     this.getTileImgOffset = function(index, x, y) {
         switch (this.grid[index]) {
             case GRIDMINE:
-                if (this.dead)
-                    return 0;
+                if (this.death)
+                    return index === this.death-1 ? 12 : 0;
             case GRIDWALL:
+                if (this.death && this.flagged[index])
+                    return 13;
                 return (this.flagged[index] ? 2 : 1);
                 break;
+
             case GRIDHARDSPACE:
                 return 3;
                 break;
             default:
-                return 3 + this.testAdjacent(x, y, GRIDMINE, false);
+                return 3 + this.testAdjacentTile(x, y, GRIDMINE, false);
         }
     };
 
@@ -211,20 +215,26 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             this.y = (e.clientY - rect.top) * scaleY;
         },
 
+        testRightClick(e) {
+            return (
+                e.which !== (void 0) ? e.which === 3 :
+                e.button !== (void 0) ? e.button === 2 :
+                false
+            );
+        },
+
         // events
         onMouseDown(e) {
             this.clicking = true;
             this.updateMouse(e); 
-            that.handleClickDown(this.x, this.y);
-
-            e.preventDefault();
+            
+            if (!this.testRightClick(e))
+                that.handleClickDown(this.x, this.y);
         },
 
         onMouseUp(e) {
             this.clicking = false;
-            that.handleClickUp(this.x, this.y);
-
-            e.preventDefault();
+            that.handleClickUp(this.x, this.y, this.testRightClick(e));
         },
 
         // event listeners
@@ -232,12 +242,17 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             document.addEventListener('mousemove', updateMouse);
             document.addEventListener('mousedown', onMouseDown);
             document.addEventListener('mouseup', onMouseUp);
+
+            canvas.oncontextmenu = () => false;
+
         },
 
         stop() {
             document.removeEventListener('mousemove', updateMouse);
             document.removeEventListener('mousedown', onMouseDown);
             document.removeEventListener('mouseup', onMouseUp);
+
+            canvas.oncontextmenu = null;
         }
     };
 
@@ -247,11 +262,11 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     const onMouseUp = e => that.mouse.onMouseUp(e);
 
     this.handleClickUp = function(x, y, rightClick) {
-        if (this.dead)
+        if (this.death)
             return;
 
-        x = (x / TILESIZE)|0;
-        y = (y / TILESIZE)|0;
+        x = Math.floor(x / TILESIZE); // Math.floor is nicer with negative numbers
+        y = Math.floor(y / TILESIZE);
         // dont register out of bound clicks
         if (x >= width || x < 0 || y >= height || y < 0) {
             this.drawWholeGrid();
@@ -264,11 +279,11 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     };
 
     this.handleClickDown = function(x, y, rightClick) {
-        if (this.dead)
+        if (this.death)
             return;
 
-        x = (x / TILESIZE)|0;
-        y = (y / TILESIZE)|0;
+        x = Math.floor(x / TILESIZE); // Math.floor is nicer with negative numbers
+        y = Math.floor(y / TILESIZE);
         // dont register out of bound clicks
         if (x >= width || x < 0 || y >= height || y < 0)
                 return;
