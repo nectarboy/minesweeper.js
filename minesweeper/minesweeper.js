@@ -1,5 +1,5 @@
 
-const MinesweeperInstance = function(canvas, width, height, mines, onload) {
+const MinesweeperInstance = function(canvas, width, height, mines) {
     var that = this;
 
     // game constants
@@ -46,10 +46,11 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             switch (this.grid[index]) {
                 case GRIDWALL:
                     this.grid[index] = GRIDSPACE;
+                    this.onWallClear();
                     this.clearAdjacent(x, y);
                     break;
                 case GRIDMINE:
-                    this.death = index+1;
+                    this.die(index);
                     // buffer should be empty at this point ..
                     // this.drawWholeGrid();
                     break;
@@ -82,6 +83,7 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             var index = getIndex(xx, yy);
             if (that.canClickIndex(index)) {
                 that.grid[index] = GRIDSPACE;
+                that.onWallClear();
                 that.clearAdjacent(xx, yy);
             }
         }
@@ -132,6 +134,30 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
         );
     };
 
+    // win condition
+    this.victory = false;
+    this.wallsLeft = area;
+    this.onWallClear = function() {
+        if (--this.wallsLeft === 0) {
+            this.win();
+        }
+    };
+
+    this.win = function() {
+        this.onvictory();
+
+        this.death = area + 1;   // dont let player interact further - also dead is a number,
+                                // but since the index will never exceed (area + 1),
+                                // the red mine shall never appear B)
+        this.victory = true;
+    };
+
+    this.die = function(index) {
+        this.ondeath();
+
+        this.death = index+1;
+    };
+
     // generate mines
     if (mines > area)
         mines = area;
@@ -145,12 +171,13 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
         }
 
         this.grid[index] = GRIDMINE;
+        this.wallsLeft--;
     }
 
     // rendering
     const tilesheet = new Image();
 
-    tilesheet.onload = () => onload();
+    tilesheet.onload = () => this.onload();
     tilesheet.src = 'minesweeper/tilesheet.png';
 
     this.drawBuffer = function(buffer) {
@@ -181,6 +208,8 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     this.getTileImgOffset = function(index, x, y) {
         switch (this.grid[index]) {
             case GRIDMINE:
+                if (this.victory)
+                    return 2;
                 if (this.death)
                     return index === this.death-1 ? 12 : 0;
             case GRIDWALL:
@@ -204,8 +233,8 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
 
         updateMouse(e) {
             // were not gonna be clicking a lot so save perf
-            if (!this.clicking)
-                return;
+            //if (!this.clicking)
+            //    return;
 
             var rect = canvas.getBoundingClientRect();
             var scaleX = rect.width / canvas.width;
@@ -225,7 +254,7 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
 
         // events
         onMouseDown(e) {
-            this.clicking = true;
+            //this.clicking = true;
             this.updateMouse(e); 
             
             if (!this.testRightClick(e))
@@ -233,23 +262,24 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
         },
 
         onMouseUp(e) {
-            this.clicking = false;
+            //this.clicking = false;
+            this.updateMouse(e);
             that.handleClickUp(this.x, this.y, this.testRightClick(e));
         },
 
         // event listeners
         start() {
-            document.addEventListener('mousemove', updateMouse);
-            document.addEventListener('mousedown', onMouseDown);
-            document.addEventListener('mouseup', onMouseUp);
+            //document.addEventListener('mousemove', updateMouse);
+            canvas.addEventListener('mousedown', onMouseDown);
+            document.addEventListener('mouseup', onMouseUp); // doing it on document fixes some issues
 
             canvas.oncontextmenu = () => false;
 
         },
 
         stop() {
-            document.removeEventListener('mousemove', updateMouse);
-            document.removeEventListener('mousedown', onMouseDown);
+            //document.removeEventListener('mousemove', updateMouse);
+            canvas.removeEventListener('mousedown', onMouseDown);
             document.removeEventListener('mouseup', onMouseUp);
 
             canvas.oncontextmenu = null;
@@ -257,11 +287,13 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     };
 
     // event listener 'this' fixer functions
-    const updateMouse = e => that.mouse.updateMouse(e);
-    const onMouseDown = e => that.mouse.onMouseDown(e);
-    const onMouseUp = e => that.mouse.onMouseUp(e);
+    //const updateMouse = e => this.mouse.updateMouse(e);
+    const onMouseDown = e => this.mouse.onMouseDown(e);
+    const onMouseUp = e => this.mouse.onMouseUp(e);
 
     this.handleClickUp = function(x, y, rightClick) {
+        this.onmouseup();
+
         if (this.death)
             return;
 
@@ -279,6 +311,8 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
     };
 
     this.handleClickDown = function(x, y, rightClick) {
+        this.onmousedown();
+
         if (this.death)
             return;
 
@@ -300,6 +334,13 @@ const MinesweeperInstance = function(canvas, width, height, mines, onload) {
             this.grid[index] = tileBefore;
         }
     };
+
+    // external latches (to be set by external force or whatever)
+    this.onload = () => {}; // when game is done loading images, run this function
+    this.ondeath = () => {}; // can be used to set animations for the smiley face button
+    this.onvictory = () => {}; // can be used to set animations for the smiley face button
+    this.onmousedown = () => {}; // can be used to set animations for the smiley face button
+    this.onmouseup = () => {}; // can be used to set animations for the smiley face button
 };
 
 export default MinesweeperInstance;

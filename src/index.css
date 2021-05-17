@@ -1,6 +1,10 @@
 html, body {
-    height: 100%;
     background: black;
+}
+
+/* decorative window */
+.decor-window {
+
 }
 
 /* minesweeper window */
@@ -22,7 +26,7 @@ html, body {
 }
 
 .score-div {
-    padding: 4px 7px 4px 5px;
+    padding: 4px 7px 0px 5px;
 
     border: 2px solid #808080;
     border-right-color: #FFFFFF;
@@ -38,13 +42,10 @@ html, body {
 /* smiley button */
 .smiley {
     display: inline-block;
+    padding: 0 0 0 0;
 
     width: 26px;
     height: 26px;
 
     background-image: url(./img/smiley_idle.png);
-}
-
-.smiley:active {
-    background-image: url(./img/smiley_press.png);
 }
