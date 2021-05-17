@@ -6,4 +6,4 @@ though there are some differences, like the smiley face uwu
 
 all the rules are the same as the original minesweeper :)
 
-it works on phones too and you can try it [here](nectarboy.github.io/minesweeper.js) !
+it works on phones too and you can try it [here](https://nectarboy.github.io/minesweeper.js) !
