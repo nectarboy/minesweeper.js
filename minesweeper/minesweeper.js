@@ -309,7 +309,6 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
         rightClick ? this.flagGrid(x, y) : this.clearGrid(x, y);
         this.drawWholeGrid();
     };
-
     this.handleClickDown = function(x, y, rightClick) {
         this.onmousedown();
 
@@ -336,11 +335,11 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
     };
 
     // external latches (to be set by external force or whatever)
-    this.onload = () => {}; // when game is done loading images, run this function
-    this.ondeath = () => {}; // can be used to set animations for the smiley face button
-    this.onvictory = () => {}; // can be used to set animations for the smiley face button
-    this.onmousedown = () => {}; // can be used to set animations for the smiley face button
-    this.onmouseup = () => {}; // can be used to set animations for the smiley face button
+    this.onload = () => {}; // when instance is done loading images, run this function
+    this.ondeath = () => {}; // can be used to set animations for a smiley face button
+    this.onvictory = () => {}; // can be used to set animations for a smiley face button
+    this.onmousedown = () => {}; // can be used to set animations for a smiley face button
+    this.onmouseup = () => {}; // can be used to set animations for a smiley face button
 };
 
 export default MinesweeperInstance;
