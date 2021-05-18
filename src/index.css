@@ -1,10 +1,57 @@
 html, body {
-    background: black;
+    height: 100%;
+    background: #303030;
+    overflow-y: hidden;
+}
+
+/* centerers */
+.outter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 /* decorative window */
 .decor-window {
+    display: inline-block;
+    padding: 3px 3px 3px 3px;
 
+    background-color: #544B4C;
+
+    box-shadow: 1px 6px 10px 1px rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+    border: 1px solid #807C7B;
+    border-top-width: 2px;
+    border-radius: 9px;
+}
+
+/* window buttons */
+.window-button-container {
+    padding: 2px 2px 2px 4px;
+    text-align: left;
+}
+
+.red-button, .green-button, .yellow-button {
+    display: inline-block;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 100%;
+}
+
+.red-button {
+    background-color: #FF6159;   
+    border: 1px solid #E0443E;
+}
+.green-button {
+    background-color: #29CE42;   
+    border: 1px solid #1CAB29;
+}
+.yellow-button {
+    background-color: #FFC12E;   
+    border: 1px solid #DFA123;
 }
 
 /* minesweeper window */
@@ -19,6 +66,7 @@ html, body {
     border: 3px solid #FFFFFF;
     border-right: 0;
     border-bottom: 0;
+    border-radius: 3px 3px 6px 6px;
 }
 
 .minesweeper-br {
@@ -48,4 +96,8 @@ html, body {
     height: 26px;
 
     background-image: url(./img/smiley_idle.png);
+}
+
+.smiley:active {
+    background-image: url(./img/smiley_press.png) !important;
 }

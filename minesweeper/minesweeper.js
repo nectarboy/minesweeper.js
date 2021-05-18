@@ -38,6 +38,7 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
     this.clearGrid = function(x, y) {
         var index = getIndex(x, y);
         if (!this.didFirstClick) {
+            const beforeTile = this.grid[index];
             this.grid[index] = GRIDWALL;
             this.didFirstClick = true;
         }
@@ -175,10 +176,11 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
     }
 
     // rendering
-    const tilesheet = new Image();
-
-    tilesheet.onload = () => this.onload();
-    tilesheet.src = 'minesweeper/tilesheet.png';
+    this.drawWholeGrid = function() {
+        for (var i = 0; i < area; i++) {
+            this.drawIndex(i);
+        }
+    };
 
     this.drawBuffer = function(buffer) {
         for (var i = 0; i < buffer.length; i++) {
@@ -186,18 +188,12 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
         }
     };
 
-    this.drawWholeGrid = function() {
-        for (var i = 0; i < area; i++) {
-            this.drawIndex(i);
-        }
-    }
-
     this.drawIndex = function(index) {
         const x = (index % width)|0;
         const y = (index / width)|0;
 
         this.ctx.drawImage(
-            tilesheet,
+            this.tilesheet,
             this.getTileImgOffset(index, x, y) * TILESIZE, 0,
             TILESIZE, TILESIZE,
             x * TILESIZE, y * TILESIZE,
@@ -254,7 +250,7 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
 
         // events
         onMouseDown(e) {
-            //this.clicking = true;
+            this.clicking = true;
             this.updateMouse(e); 
             
             if (!this.testRightClick(e))
@@ -262,7 +258,10 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
         },
 
         onMouseUp(e) {
-            //this.clicking = false;
+            if (!this.clicking)
+                return;
+
+            this.clicking = false;
             this.updateMouse(e);
             that.handleClickUp(this.x, this.y, this.testRightClick(e));
         },
@@ -274,7 +273,6 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
             document.addEventListener('mouseup', onMouseUp); // doing it on document fixes some issues
 
             canvas.oncontextmenu = () => false;
-
         },
 
         stop() {
@@ -309,6 +307,7 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
         rightClick ? this.flagGrid(x, y) : this.clearGrid(x, y);
         this.drawWholeGrid();
     };
+    
     this.handleClickDown = function(x, y, rightClick) {
         this.onmousedown();
 
@@ -340,6 +339,14 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
     this.onvictory = () => {}; // can be used to set animations for a smiley face button
     this.onmousedown = () => {}; // can be used to set animations for a smiley face button
     this.onmouseup = () => {}; // can be used to set animations for a smiley face button
+
+    // tilesheet
+    this.tilesheet = new Image();
+
+    this.startLoadingAssets = function() {
+        this.tilesheet.onload = () => this.onload();
+        this.tilesheet.src = 'minesweeper/tilesheet.png';
+    };
 };
 
 export default MinesweeperInstance;

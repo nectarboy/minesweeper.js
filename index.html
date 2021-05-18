@@ -14,10 +14,16 @@
     </head>
 
     <body>
-        <div style='text-align: center'>
+        <div class='outter-container'>
 
         <!-- decorative window -->
-        <div class='decor-window'>
+        <div class='decor-window' ondrag='return false'>
+            <!-- window buttons -->
+            <div class='window-button-container'>
+                <span class='red-button' id='red'></span>
+                <span class='yellow-button' id='yellow'></span>
+                <span class='green-button' id='green'></span>
+            </div>
 
             <!-- minesweeper front -->
             <div class='minesweeper-window'>
@@ -29,7 +35,6 @@
                     <canvas id='ms-canvas' style='vertical-align: bottom'>ur browser suxxxxxx</canvas>
                 </div>
             </div>
-
         </div>
 
         </div>

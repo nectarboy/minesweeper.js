@@ -1,9 +1,14 @@
 import MinesweeperInstance from '../minesweeper/minesweeper.js';
+import settings from './settings.js';
 
 // html
 window.onload = function() {
     const canvas = document.getElementById('ms-canvas');
     const smiley = document.getElementById('ms-smiley');
+
+    const red = document.getElementById('red');
+    const yellow = document.getElementById('yellow');
+    const green = document.getElementById('green');
 
     // preload images before continuing
     {
@@ -38,14 +43,7 @@ window.onload = function() {
         
     function main() {
 
-        var currSuffix = 'idle';
-        function setSmileyImgSuffix(suffix) {
-            smiley.style.backgroundImage = `url(./src/img/smiley_${suffix}.png)`;
-        };
-
-        smiley.onmousedown = function() {
-            setSmileyImgSuffix('press');
-        };
+        var currSmileySrc = '';
 
         // minesweeper instance
         var instance = null;
@@ -55,29 +53,31 @@ window.onload = function() {
                 instance.mouse.stop();
             }
 
-            instance = new MinesweeperInstance(canvas, width, height, mines)
+            instance = new MinesweeperInstance(canvas, settings.width, settings.height, settings.mines);
             instance.onload = function() {
-                instance.drawWholeGrid();
-                instance.mouse.start();
+                this.drawWholeGrid();
+                this.mouse.start();
 
-                currSuffix = 'idle';
-                setSmileyImgSuffix(currSuffix);
+                currSmileySrc = 'url(./src/img/smiley_idle.png)';
+                smiley.style.backgroundImage = currSmileySrc;
             };
+
+            instance.startLoadingAssets();
 
             // smiley animations
             instance.ondeath = function() {
-                currSuffix = 'dead';
-                setSmileyImgSuffix(currSuffix);
+                currSmileySrc = 'url(./src/img/smiley_dead.png)';
+                smiley.style.backgroundImage = currSmileySrc;
             };
             instance.onvictory = function() {
-                currSuffix = 'win';
-                setSmileyImgSuffix(currSuffix);
+                currSmileySrc = 'url(./src/img/smiley_win.png)';
+                smiley.style.backgroundImage = currSmileySrc;
             };
             instance.onmousedown = function() {
-                setSmileyImgSuffix('caution');
+                smiley.style.backgroundImage = 'url(./src/img/smiley_caution.png)';
             };
             instance.onmouseup = function() {
-                setSmileyImgSuffix(currSuffix);
+                smiley.style.backgroundImage = currSmileySrc;
             };
 
             console.log('starting minesweeper instance !\n' + '-'.repeat(16));
@@ -89,25 +89,10 @@ window.onload = function() {
         };
 
         // settings
-        // Beginner     –  9*9  Board and 10 Mines
-        // Intermediate – 16*16 Board and 40 Mines
-        // Advanced     – 24*24 Board and 99 Mines
-        const beginner = {
-            size: 9,
-            mines: 10
-        };
-        const intermediate = {
-            size: 16,
-            mines: 40
-        };
-        const advanced = {
-            size: 24,
-            mines: 99
-        };
+        settings.onSubmit = () => smiley.click();
 
-        var width = beginner.size;
-        var height = beginner.size;
-        var mines = beginner.mines;
+        red.onclick = yellow.onclick = green.onclick = 
+            () => settings.popupSettings();
 
         // andddd done !
         smiley.click();

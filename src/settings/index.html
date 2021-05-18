@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>game settings</title>
+        <meta charset='utf-8'>
+    </head>
+
+    <body>
+        <h1>dirty minesweeper settings C:</h1>
+        <div>
+            <div>
+                <!-- default settings -->
+                <button id='beg'>new beginner</button><br>
+                <button id='int'>new intermediate</button><br>
+                <button id='exp'>new expert</button>
+            </div>
+            <br>
+            <span>custom settings</span>
+            <div>
+                <!-- custom settings -->
+                width: <input type='text' id='wid'><br>
+                height: <input type='text' id='hei'><br>
+                mines: <input type='text' id='min'>
+            </div>
+            <br>
+
+            <button id='submit'>new custom</button>
+        </div>
+
+        <!-- settings script -->
+        <script>
+
+            var settings = null;
+            window.latchSettings = function(s) {
+                settings = s;
+                readyForInput();
+            };
+
+            function readyForInput() {
+                const beg = document.getElementById('beg');
+                const int = document.getElementById('int');
+                const exp = document.getElementById('exp');
+
+                const wid = document.getElementById('wid');
+                const hei = document.getElementById('hei');
+                const min = document.getElementById('min');
+
+                const submit = document.getElementById('submit');
+
+                // shorthands
+                function done() {
+                    settings.onSubmit();
+                    window.close();
+                }
+
+                function checkFieldsNumber(fields) {
+                    fields.forEach(field => {
+                        if (isNaN(field.value) || !field.value)
+                            return false;
+                    });
+
+                    return true;
+                }
+
+                beg.onclick = function() {
+                    settings.width = settings.height = 9;
+                    settings.mines = 10;
+
+                    done();
+                };
+                int.onclick = function() {
+                    settings.width = settings.height = 16;
+                    settings.mines = 40;
+
+                    done();
+                };
+                exp.onclick = function() {
+                    settings.width = 30;
+                    settings.height = 16;
+                    settings.mines = 99;
+
+                    done();
+                };
+
+                submit.onclick = function() {
+                    if (!checkFieldsNumber([wid, hei, min])) {
+                        window.close();
+                        return;
+                    }
+
+                    settings.width = wid.value;
+                    settings.height = hei.value;
+                    settings.mines = min.value;
+
+                    done();
+                };
+            }
+        </script>
+    </body>
+</html>
