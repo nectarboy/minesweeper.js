@@ -14,7 +14,7 @@ some things havent been added, like the score,
 and some things are a lil different, like the smiley button
 
 all the rules are the same as the original minesweeper :)
-click the <img src='https://github.com/nectarboy/minesweeper.js/blob/main/doc/lessgooo.png?raw=true'> buttons at the top for game customization !
+click the <img src='https://github.com/nectarboy/minesweeper.js/blob/main/doc/buttons.png?raw=true'> buttons at the top for game customization !
 
 ![example](https://github.com/nectarboy/minesweeper.js/blob/main/doc/lessgooo.png?raw=true 'lessgooo')
 
