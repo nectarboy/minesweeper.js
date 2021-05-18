@@ -1,5 +1,5 @@
 import MinesweeperInstance from '../minesweeper/minesweeper.js';
-import settings from './settings.js';
+import settings from './settings/settings.js';
 
 // html
 window.onload = function() {
@@ -89,7 +89,7 @@ window.onload = function() {
         };
 
         // settings
-        settings.onSubmit = () => smiley.click();
+        settings.onsubmit = () => smiley.click();
 
         red.onclick = yellow.onclick = green.onclick = 
             () => settings.popupSettings();

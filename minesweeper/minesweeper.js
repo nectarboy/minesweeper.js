@@ -38,7 +38,8 @@ const MinesweeperInstance = function(canvas, width, height, mines) {
     this.clearGrid = function(x, y) {
         var index = getIndex(x, y);
         if (!this.didFirstClick) {
-            const beforeTile = this.grid[index];
+            this.wallsLeft += this.grid[index] === GRIDMINE; // account for clicking on mines
+
             this.grid[index] = GRIDWALL;
             this.didFirstClick = true;
         }
